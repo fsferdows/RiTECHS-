@@ -89,8 +89,19 @@ export default function EventsPage({ initialSub }: EventsPageProps) {
     >
       {/* Editorial Page Title Screen */}
       <section className="bg-[#0A1F44] text-[#FAFAF7] py-16 px-4 md:px-8 border-b border-[#C9A961]/40 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#C9A961_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        <div className="max-w-4xl mx-auto text-center space-y-4">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <img 
+            src="/banner_5.png" 
+            alt="Events Banner" 
+            className="w-full h-full object-cover opacity-25"
+            onError={(e) => {
+              e.currentTarget.src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200";
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0A1F44]/95 via-[#0A1F44]/80 to-[#0A1F44]/65 mt-0" />
+        </div>
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#C9A961_1px,transparent_1px)] [background-size:16px_16px] z-0"></div>
+        <div className="max-w-4xl mx-auto text-center space-y-4 relative z-10">
           <p className="font-mono text-[10px] uppercase tracking-widest text-[#C9A961] font-semibold">Scholarly Integration Panel</p>
           <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
             Events, Seminars, Bootcamps & Cyber4Me

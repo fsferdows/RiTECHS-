@@ -12,6 +12,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [logoErr, setLogoErr] = useState(false);
 
   const navigationItems = [
     { label: "Home", page: "home" },
@@ -117,8 +118,17 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
             className="flex items-center space-x-3 cursor-pointer group"
             id="brand-logo"
           >
-            <div className="w-9 h-9 bg-[#0A1F44] rounded flex items-center justify-center border border-[#C9A961]/40 shadow-sm transition-transform group-hover:scale-105">
-              <span className="font-serif font-bold text-[#C9A961] text-base">R</span>
+            <div className="w-10 h-10 bg-[#0A1F44] rounded flex items-center justify-center border border-[#C9A961]/40 shadow-sm overflow-hidden transition-transform group-hover:scale-105">
+              {!logoErr ? (
+                <img 
+                  src="/logo.png" 
+                  alt="RiTECHS Logo" 
+                  className="w-full h-full object-cover" 
+                  onError={() => setLogoErr(true)}
+                />
+              ) : (
+                <span className="font-serif font-bold text-[#C9A961] text-base">R</span>
+              )}
             </div>
             <div>
               <div className="flex items-baseline space-x-1">

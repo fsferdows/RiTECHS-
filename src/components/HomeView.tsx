@@ -10,25 +10,39 @@ interface HomeViewProps {
 }
 
 export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) {
-  // Cinematic background images
-  const heroBgImages = [
-    "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200",
-    "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200",
-    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200",
-    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200"
+  // Cinematic background images supporting premium uploaded files with premium Unsplash fallback resources
+  const heroBgImagesConfig = [
+    { primary: "/banner_1.png", fallback: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner_1_0.png", fallback: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner_3.png", fallback: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner_4.png", fallback: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner_5.png", fallback: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200" }
   ];
+
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
+  const getActiveImageSrc = (index: number) => {
+    const config = heroBgImagesConfig[index];
+    if (!config) return "";
+    return imageErrors[config.primary] ? config.fallback : config.primary;
+  };
 
   // Prefetching strategy: Pre-fetch the next slide to ensure zero loading latency
   useEffect(() => {
-    const nextIndex = (currentSlideIndex + 1) % heroBgImages.length;
+    const nextIndex = (currentSlideIndex + 1) % heroBgImagesConfig.length;
+    const config = heroBgImagesConfig[nextIndex];
+    if (!config) return;
     const img = new Image();
-    img.src = heroBgImages[nextIndex];
-  }, [currentSlideIndex]);
+    img.src = imageErrors[config.primary] ? config.fallback : config.primary;
+    img.onerror = () => {
+      setImageErrors(prev => ({ ...prev, [config.primary]: true }));
+    };
+  }, [currentSlideIndex, imageErrors]);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlideIndex((prev) => (prev + 1) % heroBgImages.length);
+      setCurrentSlideIndex((prev) => (prev + 1) % heroBgImagesConfig.length);
     }, 6000); // 6 seconds per slide for a premium editorial showcase pace
     return () => clearInterval(timer);
   }, []);
@@ -65,21 +79,27 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
         {/* Background sliding images using Framer Motion with Ken Burns effect */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <AnimatePresence mode="popLayout">
-            <motion.div
+            <motion.img
               key={currentSlideIndex}
+              src={getActiveImageSrc(currentSlideIndex)}
+              onError={() => {
+                const primary = heroBgImagesConfig[currentSlideIndex]?.primary;
+                if (primary && !imageErrors[primary]) {
+                  setImageErrors(prev => ({ ...prev, [primary]: true }));
+                }
+              }}
               initial={{ opacity: 0, scale: 1 }}
-              animate={{ opacity: 0.22, scale: 1.06 }}
-              exit={{ opacity: 0, scale: 1.12 }}
+              animate={{ opacity: 0.55, scale: 1.05 }}
+              exit={{ opacity: 0, scale: 1.1 }}
               transition={{ 
                 opacity: { duration: 1.4, ease: "easeInOut" },
                 scale: { duration: 6.2, ease: "easeOut" }
               }}
-              style={{ backgroundImage: `url(${heroBgImages[currentSlideIndex]})` }}
-              className="absolute inset-0 bg-cover bg-center"
+              className="absolute inset-0 w-full h-full object-cover"
             />
           </AnimatePresence>
-          {/* Subtle dark-navy vignette overlay gradient to prioritize header contrast */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0A1F44] via-[#0A1F44]/90 to-[#0A1F44]/75 z-0" />
+          {/* Transparent premium overlay gradients to ensure excellent typography contrast while showcasing the majestic background images */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0A1F44] via-[#0A1F44]/85 to-transparent z-0" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0A1F44] via-transparent to-[#0A1F44]/40 z-0" />
           {/* Decorative grid pattern */}
           <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#C9A961_1px,transparent_1px)] [background-size:16px_16px] z-0"></div>
@@ -87,7 +107,7 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
         
         {/* Navigation dots specifically targeting this sliding elements region */}
         <div className="absolute bottom-6 left-8 flex space-x-2.5 z-20 pointer-events-auto">
-          {heroBgImages.map((_, idx) => (
+          {heroBgImagesConfig.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setCurrentSlideIndex(idx)}

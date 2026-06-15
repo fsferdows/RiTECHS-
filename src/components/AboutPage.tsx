@@ -136,8 +136,19 @@ export default function AboutPage({ initialSub }: AboutPageProps) {
       
       {/* Premium Corporate Hero Banner */}
       <section className="bg-[#0A1F44] text-[#FAFAF7] py-20 px-4 md:px-8 relative overflow-hidden border-b-2 border-[#C9A961]/40">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#C9A961_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        <div className="max-w-4xl mx-auto text-center space-y-4">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <img 
+            src="/banner_3.png" 
+            alt="Corporate Banner" 
+            className="w-full h-full object-cover opacity-25"
+            onError={(e) => {
+              e.currentTarget.src = "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200";
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0A1F44]/95 via-[#0A1F44]/80 to-[#0A1F44]/65 mt-0" />
+        </div>
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#C9A961_1px,transparent_1px)] [background-size:16px_16px] z-0"></div>
+        <div className="max-w-4xl mx-auto text-center space-y-4 relative z-10">
           <p className="font-mono text-[10px] uppercase tracking-widest text-[#C9A961] font-bold bg-white/5 py-1 px-3 rounded border border-white/10 inline-block">The Academic Guild</p>
           <h1 className="font-serif text-4xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
             Scientific Excellence & Organizational Integrity
