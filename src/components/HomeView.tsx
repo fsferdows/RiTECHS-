@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CONFERENCES, MEMBERS, SERVICES, PARTNERS, BLOG_POSTS } from '../data';
 import { Conference, Member } from '../types';
-import { MapPin, Calendar, Clock, ArrowRight, ShieldCheck, Play, Sparkles, Award, Globe, Users, ChevronRight, Check, BookOpen } from 'lucide-react';
+import { MapPin, Calendar, Clock, ArrowRight, ShieldCheck, Play, Sparkles, Award, Globe, Users, ChevronRight, Check, BookOpen, GraduationCap, FileEdit, Presentation } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface HomeViewProps {
@@ -310,8 +310,8 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
           </div>
 
           {/* Workflow Narrative */}
-          <div className="space-y-6">
-            <span className="text-[10px] uppercase font-mono tracking-widest bg-accent-gold/10 text-primary-navy px-2.5 py-1 rounded font-bold">
+          <div className="space-y-5">
+            <span className="inline-flex self-start text-[10px] uppercase font-mono tracking-widest bg-accent-gold/10 text-primary-navy px-2.5 py-1 rounded font-bold">
               Procedural Blueprint
             </span>
             <h2 className="font-serif text-3xl font-bold tracking-tight text-[#0A1F44]">
@@ -321,43 +321,53 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
               We guide students, university professors, and PhD specialists from initially unstructured manuscript drafts to bulletproof peer certifications.
             </p>
 
-            <ul className="text-xs font-semibold space-y-3">
-              <li className="flex items-center space-x-2">
-                <ShieldCheck className="w-4 h-4 text-accent-gold shrink-0" />
-                <span>Dual-Blind reviewer scoring flags formatting or structure errors.</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <ShieldCheck className="w-4 h-4 text-accent-gold shrink-0" />
-                <span>Continuous mentoring tracks coordinates of global authors dynamically.</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <ShieldCheck className="w-4 h-4 text-accent-gold shrink-0" />
-                <span>Certification on e-leaning catalogs double-signed by board representatives.</span>
-              </li>
-            </ul>
+            <div className="space-y-4 mt-2">
+              {[
+                { title: "Vetting & Structural Diagnosis", desc: "Dual-blind peer review flags grammatical flaws, structural gaps, or telemetry errors before general assembly." },
+                { title: "Targeted Scholar Mapping", desc: "Our concierge maps your manuscript coordinates with leading IEEE/Springer board experts based on research tags." },
+                { title: "Defending & Certifying", desc: "Coauthors coordinate mock defenses, polish drafts, and unlock double-signed certifications for high-impact journals." }
+              ].map((step, sIdx) => (
+                <div key={sIdx} className="group/step p-4 bg-white border hover:border-[#C9A961]/40 rounded-xl transition-all duration-300 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] flex items-start space-x-4">
+                  <div className="w-8 h-8 rounded-full bg-[#0A1F44] text-[#C9A961] font-mono text-xs font-bold flex items-center justify-center shrink-0 shadow-sm group-hover/step:bg-[#C9A961] group-hover/step:text-[#0A1F44] transition-colors duration-300">
+                    0{sIdx + 1}
+                  </div>
+                  <div className="space-y-1 text-left">
+                    <h4 className="font-serif text-sm font-bold text-primary-navy group-hover/step:text-accent-gold transition-colors duration-300">{step.title}</h4>
+                    <p className="text-[11px] text-gray-500 font-light leading-relaxed">{step.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
         </div>
       </section>
 
-      {/* 3. Global Impact Stats Counter */}
-      <section className="bg-primary-navy text-neutral-warm py-12 px-4 shadow-inner" id="impact-stats">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div className="space-y-1">
-            <strong className="font-serif text-3xl sm:text-4xl font-bold block text-white">170+</strong>
-            <span className="text-[10px] uppercase font-mono tracking-wider text-accent-gold font-bold">Registered Scholars</span>
-          </div>
-          <div className="space-y-1">
-            <strong className="font-serif text-3xl sm:text-4xl font-bold block text-white">50+</strong>
-            <span className="text-[10px] uppercase font-mono tracking-wider text-accent-gold font-bold">Verified Mentors</span>
-          </div>
-          <div className="space-y-1">
-            <strong className="font-serif text-3xl sm:text-4xl font-bold block text-white">25+</strong>
-            <span className="text-[10px] uppercase font-mono tracking-wider text-accent-gold font-bold">Countries Represented</span>
-          </div>
-          <div className="space-y-1">
-            <strong className="font-serif text-3xl sm:text-4xl font-bold block text-white">5</strong>
-            <span className="text-[10px] uppercase font-mono tracking-wider text-accent-gold font-bold">Conferences Hosted</span>
+      {/* 3. Global Impact Stats Counter (Glassmorphic Bento Card Layout) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" id="impact-stats">
+        <div className="bg-[#0A1F44] border-2 border-[#C9A961]/40 rounded-2xl py-10 px-6 sm:px-8 shadow-xl relative overflow-hidden text-neutral-warm">
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#C9A961_1px,transparent_1px)] [background-size:16px_16px]"></div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center relative z-10">
+            <div className="space-y-1 group">
+              <strong className="font-serif text-3.5xl sm:text-4xl font-bold block text-white tracking-tight group-hover:scale-105 transition-transform duration-300">170+</strong>
+              <div className="w-8 h-0.5 bg-[#C9A961]/50 mx-auto rounded-full my-1.5" />
+              <span className="text-[9px] uppercase font-mono tracking-widest text-[#C9A961] font-bold">Registered Scholars</span>
+            </div>
+            <div className="space-y-1 group">
+              <strong className="font-serif text-3.5xl sm:text-4xl font-bold block text-white tracking-tight group-hover:scale-105 transition-transform duration-300">50+</strong>
+              <div className="w-8 h-0.5 bg-[#C9A961]/50 mx-auto rounded-full my-1.5" />
+              <span className="text-[9px] uppercase font-mono tracking-widest text-[#C9A961] font-bold">Verified Mentors</span>
+            </div>
+            <div className="space-y-1 group">
+              <strong className="font-serif text-3.5xl sm:text-4xl font-bold block text-white tracking-tight group-hover:scale-105 transition-transform duration-300">25+</strong>
+              <div className="w-8 h-0.5 bg-[#C9A961]/50 mx-auto rounded-full my-1.5" />
+              <span className="text-[9px] uppercase font-mono tracking-widest text-[#C9A961] font-bold">Countries Represented</span>
+            </div>
+            <div className="space-y-1 group">
+              <strong className="font-serif text-3.5xl sm:text-4xl font-bold block text-white tracking-tight group-hover:scale-105 transition-transform duration-300">5</strong>
+              <div className="w-8 h-0.5 bg-[#C9A961]/50 mx-auto rounded-full my-1.5" />
+              <span className="text-[9px] uppercase font-mono tracking-widest text-[#C9A961] font-bold">Conferences Hosted</span>
+            </div>
           </div>
         </div>
       </section>
@@ -426,7 +436,7 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
         </div>
       </section>
 
-      {/* 5. Main Focus (6 service tiles) */}
+      {/* 5. Main Focus (6 service tiles to showcase exact specialized Lucide icons) */}
       <section className="bg-neutral-warm/40 border-t border-b border-divider py-16" id="our-focus">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -436,39 +446,54 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SERVICES.map((serv, idx) => (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.96, y: 20 }}
-                whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ delay: idx * 0.08, type: "spring", stiffness: 90 }}
-                whileHover={{ 
-                  y: -8, 
-                  borderColor: "rgba(201, 169, 97, 0.45)", 
-                  boxShadow: "0 15px 35px -5px rgba(201, 169, 97, 0.15), 0 10px 20px -6px rgba(201, 169, 97, 0.08)"
-                }}
-                key={idx}
-                onClick={() => {
-                  if (serv.name === 'e-Learning') onNavigate('services', 'elearning');
-                  else if (serv.name === 'Academic Modification') onNavigate('services', 'modification');
-                  else onNavigate('services');
-                }}
-                className="bg-white p-6 rounded-lg border-2 border-transparent hover:border-accent-gold/40 cursor-pointer text-left flex flex-col justify-between group h-56 shadow-xs transition-colors duration-300"
-              >
-                <div className="space-y-4">
-                  <div className="w-10 h-10 rounded bg-primary-navy text-accent-gold flex items-center justify-center group-hover:bg-accent-gold group-hover:text-primary-navy transition-colors duration-300">
-                    <BookOpen className="w-5 h-5" />
-                  </div>
-                  <h3 className="font-serif text-base font-bold text-primary-navy leading-none">{serv.name}</h3>
-                  <p className="text-xs text-gray-500 leading-relaxed font-light">{serv.description}</p>
-                </div>
+            {SERVICES.map((serv, idx) => {
+              // Map the icon dynamically based on its definition in data.ts
+              const getServiceIconComponent = (key: string) => {
+                switch (key) {
+                  case 'Users': return <Users className="w-5 h-5" />;
+                  case 'Presentation': return <Presentation className="w-5 h-5" />;
+                  case 'BookOpen': return <BookOpen className="w-5 h-5" />;
+                  case 'FileEdit': return <FileEdit className="w-5 h-5" />;
+                  case 'Calendar': return <Calendar className="w-5 h-5" />;
+                  case 'GraduationCap': return <GraduationCap className="w-5 h-5" />;
+                  default: return <BookOpen className="w-5 h-5" />;
+                }
+              };
 
-                <span className="text-[11px] font-semibold text-[#1a4a8a] uppercase tracking-wide flex items-center pt-2 group-hover:text-accent-gold transition-colors duration-300">
-                  <span>Explore program catalog</span>
-                  <ChevronRight className="w-4 h-4 ml-0.5" />
-                </span>
-              </motion.div>
-            ))}
+              return (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.96, y: 20 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ delay: idx * 0.08, type: "spring", stiffness: 90 }}
+                  whileHover={{ 
+                    y: -8, 
+                    borderColor: "rgba(201, 169, 97, 0.45)", 
+                    boxShadow: "0 15px 35px -5px rgba(201, 169, 97, 0.15), 0 10px 20px -6px rgba(201, 169, 97, 0.08)"
+                  }}
+                  key={idx}
+                  onClick={() => {
+                    if (serv.name === 'e-Learning') onNavigate('services', 'elearning');
+                    else if (serv.name === 'Academic Modification') onNavigate('services', 'modification');
+                    else onNavigate('services');
+                  }}
+                  className="bg-white p-6 rounded-lg border-2 border-transparent hover:border-accent-gold/40 cursor-pointer text-left flex flex-col justify-between group h-56 shadow-xs transition-colors duration-300"
+                >
+                  <div className="space-y-4">
+                    <div className="w-10 h-10 rounded bg-primary-navy text-accent-gold flex items-center justify-center group-hover:bg-accent-gold group-hover:text-primary-navy transition-colors duration-300">
+                      {getServiceIconComponent(serv.icon)}
+                    </div>
+                    <h3 className="font-serif text-base font-bold text-primary-navy leading-none">{serv.name}</h3>
+                    <p className="text-xs text-gray-500 leading-relaxed font-light">{serv.description}</p>
+                  </div>
+
+                  <span className="text-[11px] font-semibold text-[#1a4a8a] uppercase tracking-wide flex items-center pt-2 group-hover:text-accent-gold transition-colors duration-300">
+                    <span>Explore program catalog</span>
+                    <ChevronRight className="w-4 h-4 ml-0.5" />
+                  </span>
+                </motion.div>
+              );
+            })}
           </div>
 
         </div>
