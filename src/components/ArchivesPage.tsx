@@ -89,11 +89,23 @@ export default function ArchivesPage() {
       transition={{ duration: 0.4 }}
       className="bg-neutral-warm min-h-screen text-text-body font-sans pb-16"
     >
-      {/* Editorial Page Header Banner */}
-      <section className="bg-primary-navy text-[#FAFAF7] py-16 px-4 md:px-8 border-b-2 border-[#C9A961]/40 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#C9A961_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        <div className="max-w-4xl mx-auto text-center space-y-4">
-          <span className="font-mono text-[9px] uppercase tracking-widest text-[#C9A961] font-bold bg-white/5 py-1 px-3 rounded border border-white/10">Scholarly Library Archives</span>
+      {/* Editorial Page Header Banner with Beautiful Background */}
+      <section className="bg-[#0A1F44] text-[#FAFAF7] py-20 px-4 md:px-8 border-b-2 border-[#C9A961]/40 relative overflow-hidden">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <img 
+            src="/banner_5.png" 
+            alt="Archives Banner" 
+            className="w-full h-full object-cover opacity-25"
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              e.currentTarget.src = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200";
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0A1F44]/95 via-[#0A1F44]/80 to-[#0A1F44]/65 mt-0" />
+        </div>
+        <div className="absolute inset-x-0 top-0 bottom-0 opacity-15 bg-[radial-gradient(#C9A961_1px,transparent_1px)] [background-size:16px_16px] z-0 pointer-events-none"></div>
+        <div className="max-w-4xl mx-auto text-center space-y-4 relative z-10">
+          <span className="font-mono text-[9px] uppercase tracking-widest text-[#C9A961] font-bold bg-white/5 py-1 px-3 rounded border border-white/10 inline-block">Scholarly Library Archives</span>
           <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
             Proceedings Archives & Repositories
           </h1>
