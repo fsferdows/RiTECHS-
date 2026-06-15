@@ -1,0 +1,6 @@
+{
+  "name": "RiTECHS Premium Platform",
+  "description": "A high-end, premium editorial multi-page marketing, networking, and e-learning platform mapping the Research, Innovation, Technology, and Solutions network.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
