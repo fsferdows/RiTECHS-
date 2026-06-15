@@ -39,6 +39,15 @@ export default function MentorshipHub({ initialSub, initialProfile }: Mentorship
       setCurrentView('directory');
     }
   }, [initialProfile]);
+
+  useEffect(() => {
+    if (initialSub) {
+      if (initialSub === 'directory') setCurrentView('directory');
+      else if (initialSub === 'why-join') setCurrentView('why-join');
+      else if (initialSub === 'benefits') setCurrentView('benefits');
+      else if (initialSub === 'subscription') setCurrentView('subscription');
+    }
+  }, [initialSub]);
   const [connectionRequested, setConnectionRequested] = useState(false);
   const [messageText, setMessageText] = useState("");
 
@@ -129,46 +138,57 @@ export default function MentorshipHub({ initialSub, initialProfile }: Mentorship
     <div className="bg-neutral-warm min-h-screen text-text-body font-sans transition-all">
       
       {/* Editorial Title Header */}
-      <section className="bg-[#0A1F44] text-[#FAFAF7] py-16 px-4 md:px-8 border-b border-[#C9A961]/40 relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 bottom-0 opacity-15 bg-[radial-gradient(#C9A961_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        <div className="max-w-4xl mx-auto text-center space-y-4">
+      <section className="bg-[#0A1F44] text-[#FAFAF7] py-12 px-4 md:px-8 border-b border-[#C9A961]/40 relative overflow-hidden">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <img 
+            src="/banner_2.png" 
+            alt="Membership Banner" 
+            className="w-full h-full object-cover opacity-25"
+            onError={(e) => {
+              e.currentTarget.src = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200";
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0A1F44]/95 via-[#0A1F44]/80 to-[#0A1F44]/65 mt-0" />
+        </div>
+        <div className="absolute inset-x-0 top-0 bottom-0 opacity-15 bg-[radial-gradient(#C9A961_1px,transparent_1px)] [background-size:16px_16px] z-0 pointer-events-none"></div>
+        <div className="max-w-4xl mx-auto text-center space-y-4 relative z-10">
           <p className="font-mono text-[10px] uppercase tracking-widest text-[#C9A961] font-semibold">Join the Elite Directory</p>
-          <h1 className="font-serif text-4xl font-bold tracking-tight text-white leading-tight">
+          <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
             The RiTECHS Global Mentorship Network
           </h1>
-          <p className="text-sm text-gray-300 font-light max-w-xl mx-auto leading-relaxed">
+          <p className="text-xs text-gray-300 font-light max-w-xl mx-auto leading-relaxed">
             Unifying 170+ senior lecturers, certified technology investigators, PhD candidate scholars, and industrial engineering researchers across 25 represented countries.
           </p>
 
-          <div className="flex justify-center space-x-2 pt-2 text-xs">
+          <div className="flex flex-wrap justify-center gap-2 pt-2 text-[11px]">
             <button
               onClick={() => setCurrentView('directory')}
-              className={`px-4 py-2 rounded font-semibold uppercase tracking-wider transition ${
-                currentView === 'directory' ? 'bg-[#C9A961] text-[#0A1F44]' : 'bg-white/5 text-gray-300 hover:bg-white/10'
+              className={`px-4 py-1.5 rounded font-semibold uppercase tracking-wider transition cursor-pointer ${
+                currentView === 'directory' ? 'bg-[#C9A961] text-[#0A1F44] shadow-md' : 'bg-white/5 text-gray-300 hover:bg-white/10'
               }`}
             >
               Directory Search
             </button>
             <button
               onClick={() => setCurrentView('why-join')}
-              className={`px-4 py-2 rounded font-semibold uppercase tracking-wider transition ${
-                currentView === 'why-join' ? 'bg-[#C9A961] text-[#0A1F44]' : 'bg-white/5 text-gray-300 hover:bg-white/10'
+              className={`px-4 py-1.5 rounded font-semibold uppercase tracking-wider transition cursor-pointer ${
+                currentView === 'why-join' ? 'bg-[#C9A961] text-[#0A1F44] shadow-md' : 'bg-white/5 text-gray-300 hover:bg-white/10'
               }`}
             >
               Why Join?
             </button>
             <button
               onClick={() => setCurrentView('benefits')}
-              className={`px-4 py-2 rounded font-semibold uppercase tracking-wider transition ${
-                currentView === 'benefits' ? 'bg-[#C9A961] text-[#0A1F44]' : 'bg-white/5 text-gray-300 hover:bg-white/10'
+              className={`px-4 py-1.5 rounded font-semibold uppercase tracking-wider transition cursor-pointer ${
+                currentView === 'benefits' ? 'bg-[#C9A961] text-[#0A1F44] shadow-md' : 'bg-white/5 text-gray-300 hover:bg-white/10'
               }`}
             >
               Benefits
             </button>
             <button
               onClick={() => setCurrentView('subscription')}
-              className={`px-4 py-2 rounded font-semibold uppercase tracking-wider transition ${
-                currentView === 'subscription' ? 'bg-[#C9A961] text-[#0A1F44]' : 'bg-white/5 text-gray-300 hover:bg-white/10'
+              className={`px-4 py-1.5 rounded font-semibold uppercase tracking-wider transition cursor-pointer ${
+                currentView === 'subscription' ? 'bg-[#C9A961] text-[#0A1F44] shadow-md' : 'bg-white/5 text-gray-300 hover:bg-white/10'
               }`}
             >
               Subscriptions

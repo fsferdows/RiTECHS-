@@ -13,8 +13,8 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
   // Cinematic background images supporting premium uploaded files with premium Unsplash fallback resources
   const heroBgImagesConfig = [
     { primary: "/banner_1.png", fallback: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200" },
-    { primary: "/banner_1_0.png", fallback: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200" },
-    { primary: "/banner_3.png", fallback: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner_2.png", fallback: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner_3.png", fallback: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200" },
     { primary: "/banner_4.png", fallback: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200" },
     { primary: "/banner_5.png", fallback: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200" }
   ];
@@ -72,10 +72,10 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
   return (
-    <div className="space-y-24 pb-16 font-sans">
+    <div className="space-y-16 pb-12 font-sans">
       
       {/* 1. Cinematic Hero Banner */}
-      <section className="bg-[#0A1F44] text-[#FAFAF7] py-24 px-4 md:px-8 border-b-2 border-accent-gold/40 relative overflow-hidden" id="cinematic-hero">
+      <section className="bg-[#0A1F44] text-[#FAFAF7] py-16 md:py-20 px-4 md:px-8 border-b-2 border-accent-gold/40 relative overflow-hidden" id="cinematic-hero">
         {/* Background sliding images using Framer Motion with Ken Burns effect */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <AnimatePresence mode="popLayout">
