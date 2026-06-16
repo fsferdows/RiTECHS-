@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { SERVICES, COURSES } from '../data';
 import { 
   Play, Pause, Award, GraduationCap, ArrowRight, BookOpen, Clock, Users, 
@@ -27,6 +27,45 @@ export default function ServicesHub({ initialSub }: ServicesHubProps) {
   const [userScore, setUserScore] = useState<number | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [courseCompleted, setCourseCompleted] = useState(false);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Synchronize playing state with standard HTML5 video API
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.play().catch(e => {
+          console.log("Play prevented:", e);
+          setIsPlaying(false);
+        });
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isPlaying]);
+
+  // Handle chapter changes - reset stream states smoothly
+  useEffect(() => {
+    setIsPlaying(false);
+    setLectureProgress(0);
+    if (videoRef.current) {
+      videoRef.current.load();
+    }
+  }, [currentChapter, selectedCourse]);
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      const percentage = Math.round((videoRef.current.currentTime / videoRef.current.duration) * 100);
+      setLectureProgress(isNaN(percentage) ? 0 : percentage);
+    }
+  };
+
+  const handleVideoEnded = () => {
+    setIsPlaying(false);
+    setLectureProgress(100);
+    setCourseCompleted(true);
+    setUserScore(100); // Auto-unlock success certification when video finishes
+  };
 
   // Modification Tool states
   const [inputTextForReview, setInputTextForReview] = useState("");
@@ -791,35 +830,45 @@ export default function ServicesHub({ initialSub }: ServicesHubProps) {
                     
                     {/* Simulated Player */}
                     <div className="bg-[#1A1A2E] text-white rounded-lg border border-white/10 overflow-hidden relative shadow-lg">
-                      <div className="absolute top-4 left-4 z-10 bg-black/50 backdrop-blur-xs px-2.5 py-1 rounded text-[10px] uppercase font-mono tracking-wider font-bold">
+                      <div className="absolute top-4 left-4 z-20 bg-black/50 backdrop-blur-xs px-2.5 py-1 rounded text-[10px] uppercase font-mono tracking-wider font-bold pointer-events-none">
                         {selectedCourse.category} · {courseChapters[currentChapter].title}
                       </div>
 
-                      <div className="h-64 sm:h-[320px] flex flex-col items-center justify-center p-4 relative overflow-hidden bg-gradient-to-tr from-primary-navy to-charcoal">
-                        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#C9A961_1px,transparent_1px)] [background-size:12px_12px]"></div>
+                      <div className="h-64 sm:h-[320px] w-full relative bg-black flex items-center justify-center">
+                        <video
+                          ref={videoRef}
+                          className="w-full h-full object-cover"
+                          src="/video 2.mp4"
+                          playsInline
+                          onTimeUpdate={handleTimeUpdate}
+                          onEnded={handleVideoEnded}
+                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            console.log("video 2.mp4 failed, playing webinar fallback video loop");
+                            e.currentTarget.src = "https://assets.mixkit.co/videos/preview/mixkit-video-seminar-on-a-large-screen-40344-large.mp4";
+                          }}
+                        />
 
-                        {isPlaying ? (
-                          <div className="text-center space-y-4 animate-pulse">
-                            <div className="w-14 h-14 rounded-full border-4 border-[#C9A961] border-t-transparent animate-spin mx-auto"></div>
-                            <p className="text-xs font-mono text-[#C9A961] tracking-widest font-semibold uppercase text-center">Stream active - Lecture play hours... {lectureProgress}%</p>
-                          </div>
-                        ) : (
-                          <div className="text-center space-y-4 z-10">
+                        {!isPlaying && (
+                          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center p-4 z-10 space-y-4">
                             <button
                               onClick={() => setIsPlaying(true)}
                               className="w-14 h-14 rounded-full bg-[#C9A961] text-[#0A1F44] flex items-center justify-center hover:scale-105 transition shadow-lg mx-auto cursor-pointer font-bold"
                             >
                               <Play className="w-6 h-6 fill-current ml-0.5" />
                             </button>
-                            <p className="text-xs font-semibold text-white tracking-wider">Stream Paused. Press Play to listen.</p>
+                            <p className="text-xs font-semibold text-white tracking-wider">Stream Paused. Press Play to watch the class lecture.</p>
                           </div>
                         )}
 
-                        <div className="absolute bottom-0 inset-x-0 bg-black/65 backdrop-blur-xs px-4 py-2.5 flex items-center justify-between text-xs font-mono text-gray-300">
-                          <button onClick={() => setIsPlaying(!isPlaying)} className="hover:text-accent-gold" title={isPlaying ? "Pause" : "Play"}>
-                            {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
-                          </button>
-                          <span className="text-[10px]">Prof. Dr. Md Arafatur Rahman Vetting Class</span>
+                        <div className="absolute bottom-0 inset-x-0 bg-black/75 backdrop-blur-xs px-4 py-2.5 flex items-center justify-between text-xs font-mono text-gray-300 z-20">
+                          <div className="flex items-center space-x-3">
+                            <button onClick={() => setIsPlaying(!isPlaying)} className="hover:text-[#C9A961] transition" title={isPlaying ? "Pause" : "Play"}>
+                              {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
+                            </button>
+                            <span className="text-[10px]">Lecture Course: {selectedCourse.title}</span>
+                          </div>
+                          <span className="text-[10px] text-[#C9A961] font-bold">Progress: {lectureProgress}%</span>
                         </div>
                       </div>
                     </div>

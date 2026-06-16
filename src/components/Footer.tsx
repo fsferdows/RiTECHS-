@@ -28,12 +28,24 @@ export default function Footer({ onNavigate }: FooterProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-12 border-b border-white/10">
           
           <div className="lg:col-span-5 space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-[#C9A961] rounded-sm flex items-center justify-center">
-                <span className="font-serif font-bold text-[#0A1F44] text-base">R</span>
+            <div className="flex items-center space-x-3">
+              <div className="w-9 h-9 bg-neutral-900 rounded border border-[#C9A961]/50 flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/logo.png" 
+                  alt="RiTECHS Logo" 
+                  className="w-full h-full object-cover" 
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
               </div>
-              <span className="font-serif text-2xl font-bold tracking-tight text-white">RiTECHS</span>
-              <span className="h-1.5 w-1.5 rounded-full bg-[#C9A961]"></span>
+              <div>
+                <div className="flex items-baseline space-x-1">
+                  <span className="font-serif text-2xl font-bold tracking-tight text-white">RiTECHS</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#C9A961]"></span>
+                </div>
+                <p className="text-[8px] uppercase font-mono tracking-widest text-[#C9A961] font-semibold leading-none mt-0.5">Learn and Grow</p>
+              </div>
             </div>
             
             <p className="text-sm text-gray-400 font-light leading-relaxed max-w-md">

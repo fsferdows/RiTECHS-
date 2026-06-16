@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CONFERENCES, MEMBERS, SERVICES, PARTNERS, BLOG_POSTS } from '../data';
 import { Conference, Member } from '../types';
-import { MapPin, Calendar, Clock, ArrowRight, ShieldCheck, Play, Sparkles, Award, Globe, Users, ChevronRight, Check, BookOpen, GraduationCap, FileEdit, Presentation } from 'lucide-react';
+import { MapPin, Calendar, Clock, ArrowRight, ShieldCheck, Play, Sparkles, Award, Globe, Users, ChevronRight, Check, BookOpen, GraduationCap, FileEdit, Presentation, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface HomeViewProps {
@@ -12,20 +12,23 @@ interface HomeViewProps {
 export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) {
   // Cinematic background images supporting premium uploaded files with premium Unsplash fallback resources
   const heroBgImagesConfig = [
-    { primary: "/banner_1.png", fallback: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200" },
-    { primary: "/banner_2.png", fallback: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200" },
-    { primary: "/banner_3.png", fallback: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200" },
-    { primary: "/banner_4.png", fallback: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200" },
-    { primary: "/banner_5.png", fallback: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200" }
+    { primary: "/banner 1.png", secondary: "/banner_1.png", fallback: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner 2.png", secondary: "/banner_2.png", fallback: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner 3.png", secondary: "/banner_3.png", fallback: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner 4.png", secondary: "/banner_4.png", fallback: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner 5.png", secondary: "/banner_5.png", fallback: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200" }
   ];
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+  const [imageErrors, setImageErrors] = useState<Record<string, 'secondary' | 'failed'>>({});
 
   const getActiveImageSrc = (index: number) => {
     const config = heroBgImagesConfig[index];
     if (!config) return "";
-    return imageErrors[config.primary] ? config.fallback : config.primary;
+    const failureType = imageErrors[config.primary];
+    if (!failureType) return config.primary;
+    if (failureType === 'secondary') return config.secondary;
+    return config.fallback;
   };
 
   // Prefetching strategy: Pre-fetch the next slide to ensure zero loading latency
@@ -34,9 +37,14 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
     const config = heroBgImagesConfig[nextIndex];
     if (!config) return;
     const img = new Image();
-    img.src = imageErrors[config.primary] ? config.fallback : config.primary;
+    img.src = getActiveImageSrc(nextIndex);
     img.onerror = () => {
-      setImageErrors(prev => ({ ...prev, [config.primary]: true }));
+      const currentFail = imageErrors[config.primary];
+      if (!currentFail) {
+        setImageErrors(prev => ({ ...prev, [config.primary]: 'secondary' }));
+      } else if (currentFail === 'secondary') {
+        setImageErrors(prev => ({ ...prev, [config.primary]: 'failed' }));
+      }
     };
   }, [currentSlideIndex, imageErrors]);
 
@@ -50,6 +58,12 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
   // Rotate upcoming conferences in Hero Banner
   const upcomingConfs = CONFERENCES.filter(c => c.type === 'upcoming');
   const [activeHeroConf, setActiveHeroConf] = useState(0);
+
+  // Inner sub-tabs inside rotating Hero Banner for high-density international reviews
+  const [heroSubTab, setHeroSubTab] = useState<'overview' | 'tracks' | 'dates' | 'speakers' | 'fees'>('overview');
+
+  // Control active workflow video ('video1' or 'video2')
+  const [activeWorkflowVideo, setActiveWorkflowVideo] = useState<'video1' | 'video2'>('video1');
 
   // Play button on MP4 explanatory workflow simulation state
   const [videoPlayState, setVideoPlayState] = useState(false);
@@ -83,9 +97,14 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
               key={currentSlideIndex}
               src={getActiveImageSrc(currentSlideIndex)}
               onError={() => {
-                const primary = heroBgImagesConfig[currentSlideIndex]?.primary;
-                if (primary && !imageErrors[primary]) {
-                  setImageErrors(prev => ({ ...prev, [primary]: true }));
+                const config = heroBgImagesConfig[currentSlideIndex];
+                if (config) {
+                  const currentFail = imageErrors[config.primary];
+                  if (!currentFail) {
+                    setImageErrors(prev => ({ ...prev, [config.primary]: 'secondary' }));
+                  } else if (currentFail === 'secondary') {
+                    setImageErrors(prev => ({ ...prev, [config.primary]: 'failed' }));
+                  }
                 }
               }}
               initial={{ opacity: 0, scale: 1 }}
@@ -209,24 +228,59 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
           >
             <div className="absolute right-0 top-0 -mr-6 -mt-6 w-32 h-32 bg-[#C9A961]/10 rounded-full blur-2xl"></div>
             
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6 sm:p-8 shadow-xl space-y-6 relative overflow-hidden backdrop-blur-md">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 sm:p-8 shadow-xl space-y-4 relative overflow-hidden backdrop-blur-md">
               <div className="absolute top-0 right-0 bg-[#C9A961] text-[#0A1F44] font-mono font-bold text-[8px] uppercase tracking-widest px-3 py-1 rounded-bl">
                 Call for Papers Active
               </div>
 
               {/* Stacked Conf header switcher */}
-              <div className="flex space-x-3 pb-4 border-b border-white/10">
-                {upcomingConfs.map((c, idx) => (
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+                <div className="flex space-x-2">
+                  {upcomingConfs.map((c, idx) => (
+                    <button
+                      key={c.id}
+                      onClick={() => {
+                        setActiveHeroConf(idx);
+                        // Default to overview tab on conference swap for stable visual layouts
+                        setHeroSubTab('overview');
+                      }}
+                      className={`text-[10px] font-semibold py-1 px-3 rounded font-mono transition-all duration-300 cursor-pointer ${
+                        activeHeroConf === idx 
+                          ? 'bg-[#C9A961] text-[#0A1F44] shadow font-bold' 
+                          : 'text-gray-400 hover:text-white bg-white/5'
+                      }`}
+                    >
+                      {c.name}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-[9px] text-gray-400 font-mono font-bold uppercase tracking-wider hidden sm:inline-block">Scopus Springer Indexed</span>
+              </div>
+
+              {/* Advanced Interactive Meta-Tabs Selector */}
+              <div className="flex flex-wrap border-b border-white/5 pb-2 mb-2 gap-1 sm:gap-2">
+                {[
+                  { id: 'overview', label: 'Overview' },
+                  { id: 'tracks', label: 'Tracks' },
+                  { id: 'dates', label: 'Milestones' },
+                  { id: 'speakers', label: 'Keynotes' },
+                  { id: 'fees', label: 'Fees' }
+                ].map((tab) => (
                   <button
-                    key={c.id}
-                    onClick={() => setActiveHeroConf(idx)}
-                    className={`text-xs font-semibold py-1 px-3.5 rounded font-mono transition-all duration-300 cursor-pointer ${
-                      activeHeroConf === idx 
-                        ? 'bg-[#C9A961] text-[#0A1F44] shadow' 
-                        : 'text-gray-400 hover:text-white bg-white/5'
+                    key={tab.id}
+                    onClick={() => setHeroSubTab(tab.id as any)}
+                    className={`px-2 py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded transition-all duration-200 cursor-pointer ${
+                      heroSubTab === tab.id
+                        ? 'bg-[#C9A961] text-[#0A1F44] font-extrabold shadow-sm'
+                        : 'text-gray-400 hover:text-white hover:bg-white/10 bg-white/5'
                     }`}
                   >
-                    {c.name}
+                    {tab.id === 'overview' && '📋 '}
+                    {tab.id === 'tracks' && '⚡ '}
+                    {tab.id === 'dates' && '📅 '}
+                    {tab.id === 'speakers' && '👑 '}
+                    {tab.id === 'fees' && '💶 '}
+                    <span>{tab.label}</span>
                   </button>
                 ))}
               </div>
@@ -234,55 +288,193 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
               {/* Selected Conf Metadata (Animated switches) */}
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={activeHeroConf}
-                  initial={{ opacity: 0, y: 15 }}
+                  key={`${activeHeroConf}-${heroSubTab}`}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25, ease: "easeInOut" }}
                   className="space-y-4 text-left"
                 >
-                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-snug">
-                    {upcomingConfs[activeHeroConf].full_name}
-                  </h3>
+                  {/* Sub-tabs switch view rendering */}
+                  <div className="min-h-[224px] flex flex-col justify-between">
+                    {heroSubTab === 'overview' && (
+                      <div className="space-y-3 animate-fade-in text-xs">
+                        <h3 className="font-serif text-lg sm:text-xl font-bold text-white tracking-snug">
+                          {upcomingConfs[activeHeroConf].full_name}
+                        </h3>
+                        <p className="text-xs text-gray-300 leading-relaxed font-light">
+                          Submit high-quality research drafts to the {upcomingConfs[activeHeroConf].name} hybrid assembly. Accepted papers undergo dual-blind peer scores before publication in Springer or digital indexes.
+                        </p>
+                        {/* Chair list */}
+                        <div className="border-t border-b border-white/5 py-2.5 mt-1">
+                          <p className="text-[#C9A961] uppercase font-mono font-bold text-[8px] tracking-widest leading-none mb-1.5">General Chairs</p>
+                          <p className="font-semibold text-gray-200">{upcomingConfs[activeHeroConf].general_chairs.join(" · ")}</p>
+                        </div>
+                        {/* Metadata drawer */}
+                        <div className="grid grid-cols-2 gap-4 font-mono mt-1">
+                          <div className="flex items-center space-x-1.5">
+                            <Calendar className="w-3.5 h-3.5 text-[#C9A961] shrink-0" />
+                            <div>
+                              <p className="text-[8px] text-gray-500 font-bold leading-none">Assembly Dates</p>
+                              <p className="font-medium text-gray-300 mt-0.5 text-[10px]">{upcomingConfs[activeHeroConf].dates.display}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-1.5">
+                            <MapPin className="w-3.5 h-3.5 text-[#C9A961] shrink-0" />
+                            <div>
+                              <p className="text-[8px] text-gray-500 font-bold leading-none">Geographical Spot</p>
+                              <p className="font-medium text-gray-300 mt-0.5 text-[10px] truncate max-w-[140px]">{upcomingConfs[activeHeroConf].location}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
-                  <p className="text-xs text-gray-300 leading-relaxed font-light">
-                    Submit high-quality research drafts to the {upcomingConfs[activeHeroConf].name} hybrid assembly. Accepted papers undergo dual-blind peer scores before publication in Springer or digital indexes.
-                  </p>
+                    {heroSubTab === 'tracks' && (
+                      <div className="space-y-2.5 animate-fade-in">
+                        <div className="flex justify-between items-center border-b border-white/5 pb-1">
+                          <span className="text-[9px] text-[#C9A961] font-mono uppercase font-bold">Primary Scientific Tracks</span>
+                          <span className="text-[8px] text-gray-400 font-mono">Dual-Blind Vetted</span>
+                        </div>
+                        <div className="max-h-[180px] overflow-y-auto space-y-1.5 pr-1 text-left scrollbar-thin">
+                          {upcomingConfs[activeHeroConf].id === 'ICETCS2026' ? (
+                            [
+                              "Track 1: Cyber Security & Network Space Challenges & Solutions",
+                              "Track 2: Cyber Security Challenges for Mobile & Autonomous Vehicles",
+                              "Track 3: Cloud Security, Architecture and its Future",
+                              "Track 4: Blockchain Architecture & Distributed Ledgers",
+                              "Track 5: Securing the Connected World: IoT Security",
+                              "Track 6: Cybersecurity for Space Systems & Infrastructure",
+                              "Track 7: CyberVehiCare: Mobile Health & V2X Monitoring",
+                              "Track 8: Hardware Security, Trojans & Supply-Chain Trust Verification"
+                            ].map((tr, tIdx) => (
+                              <div key={tIdx} className="p-1.5 bg-white/5 rounded hover:bg-white/10 transition-colors text-[10px] text-gray-300 font-sans flex items-start space-x-1.5">
+                                <span className="bg-[#C9A961]/20 text-[#C9A961] text-[8px] font-mono font-bold px-1 py-0.5 rounded shrink-0">T0{tIdx+1}</span>
+                                <span className="leading-tight">{tr}</span>
+                              </div>
+                            ))
+                          ) : upcomingConfs[activeHeroConf].id === 'AIoT-RSE2026' ? (
+                            [
+                              "Track 1: Smart Photovoltaic Array Grid Control Systems",
+                              "Track 2: Deep Neural Networks for Carbon Capture",
+                              "Track 3: Edge AI for Battery Management Systems",
+                              "Track 4: Sovereign Biomass Generation Protocols"
+                            ].map((tr, tIdx) => (
+                              <div key={tIdx} className="p-1.5 bg-white/5 rounded hover:bg-white/10 transition-colors text-[10px] text-gray-300 font-sans flex items-start space-x-1.5">
+                                <span className="bg-[#C9A961]/20 text-[#C9A961] text-[8px] font-mono font-bold px-1 py-0.5 rounded shrink-0">T0{tIdx+1}</span>
+                                <span className="leading-tight">{tr}</span>
+                              </div>
+                            ))
+                          ) : (
+                            [
+                              "Track 1: Dynamic Resource Scheduling in 5G Networks",
+                              "Track 2: Architectures for Internet of Everything (IoE)",
+                              "Track 3: Smart Agriculture Sensors & Extenders",
+                              "Track 4: Data Management in Distributed Ledger Systems"
+                            ].map((tr, tIdx) => (
+                              <div key={tIdx} className="p-1.5 bg-white/5 rounded hover:bg-white/10 transition-colors text-[10px] text-gray-300 font-sans flex items-start space-x-1.5">
+                                <span className="bg-[#C9A961]/20 text-[#C9A961] text-[8px] font-mono font-bold px-1 py-0.5 rounded shrink-0">T0{tIdx+1}</span>
+                                <span className="leading-tight">{tr}</span>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    )}
 
-                  {/* Chair list */}
-                  <div className="border-t border-b border-white/5 py-3 text-xs">
-                    <p className="text-gray-400 uppercase font-mono font-bold text-[8px] tracking-widest leading-none mb-1.5">General Chairs</p>
-                    <p className="font-semibold text-gray-200">{upcomingConfs[activeHeroConf].general_chairs.join(" · ")}</p>
+                    {heroSubTab === 'dates' && (
+                      <div className="space-y-2.5 animate-fade-in text-xs">
+                        <div className="flex justify-between items-center border-b border-white/5 pb-1">
+                          <span className="text-[9px] text-[#C9A961] font-mono uppercase font-bold">Important Dates & Milestones</span>
+                          <span className="text-[8px] text-gray-400 font-mono">Strict 23:59 GMT Submission</span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                          {upcomingConfs[activeHeroConf].deadlines.map((dl, idx) => (
+                            <div key={idx} className="p-1.5 bg-white/5 rounded border border-white/5 flex justify-between items-center text-[10px] font-mono">
+                              <span className="text-gray-400 font-sans font-medium">{dl.label}:</span>
+                              <span className="text-[#C9A961] font-bold">{dl.date}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="p-2 bg-[#C9A961]/10 rounded border border-[#C9A961]/20 text-[9px] text-gray-300 leading-relaxed font-sans">
+                          <strong>Sovereign Vetting Timeline:</strong> Double-blind papers status returned fully inside 30 review days with direct Springer format compliance suggestions.
+                        </div>
+                      </div>
+                    )}
+
+                    {heroSubTab === 'speakers' && (
+                      <div className="space-y-2.5 animate-fade-in text-xs">
+                        <div className="flex justify-between items-center border-b border-white/5 pb-1">
+                          <span className="text-[9px] text-[#C9A961] font-mono uppercase font-bold">Keynote Speakers & Advisors</span>
+                          <span className="text-[8px] text-gray-400 font-mono">Confirmed International Panelist</span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-[180px] overflow-y-auto pr-1">
+                          {upcomingConfs[activeHeroConf].id === 'ICETCS2026' ? (
+                            [
+                              { name: "Emma Fadlon", org: "Innovate UK CyberASAP" },
+                              { name: "Giulio Ferro", org: "University of Genoa, Italy" },
+                              { name: "Hendrik Wöhrle", org: "Duisburg-Essen, Germany" },
+                              { name: "Imed Ben Dhaou", org: "University of Turku, Finland" },
+                              { name: "Luigi Coppolino", org: "University Parthenope, Naples" },
+                              { name: "Mario Marchese", org: "University of Genoa, Italy" },
+                              { name: "Matteo Repetto", org: "CNR / IMATI" },
+                              { name: "Paul Wooderson", org: "HORIBA MIRA Cybersecurity" }
+                            ].map((sp, idx) => (
+                              <div key={idx} className="p-1.5 bg-white/5 rounded border border-white/5 text-[10px] flex flex-col justify-start text-left">
+                                <span className="font-bold text-white leading-tight font-serif">{sp.name}</span>
+                                <span className="text-[9px] text-gray-450 font-mono mt-0.5 leading-none">{sp.org}</span>
+                              </div>
+                            ))
+                          ) : (
+                            upcomingConfs[activeHeroConf].keynote_speakers.map((sp, idx) => (
+                              <div key={idx} className="p-1.5 bg-white/5 rounded border border-white/5 text-[10px] flex flex-col justify-start text-left">
+                                <span className="font-bold text-white leading-tight font-serif">{sp}</span>
+                                <span className="text-[9px] text-gray-450 font-mono mt-0.5 leading-none">Keynote Presenter</span>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {heroSubTab === 'fees' && (
+                      <div className="space-y-2.5 animate-fade-in text-xs text-left">
+                        <div className="flex justify-between items-center border-b border-white/5 pb-1">
+                          <span className="text-[9px] text-[#C9A961] font-mono uppercase font-bold">Standard Registration Pricing</span>
+                          <span className="text-[8px] text-gray-400 font-mono">Lecture printing & Lunch pass</span>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-2 mt-1">
+                          <div className="p-2.5 bg-[#C9A961]/5 rounded-lg border border-[#C9A961]/20">
+                            <span className="text-[8px] font-mono text-[#C9A961] block leading-none">LOCAL ATTENDEE</span>
+                            <strong className="text-base text-white block mt-1 font-serif">EUR 400</strong>
+                            <p className="text-[8px] text-gray-400 mt-1 leading-tight">Covers conference proceedings and catering bills.</p>
+                          </div>
+
+                          <div className="p-2.5 bg-[#C9A961]/5 rounded-lg border border-[#C9A961]/20">
+                            <span className="text-[8px] font-mono text-[#C9A961] block leading-none">OVERSEAS DELEGATE</span>
+                            <strong className="text-base text-white block mt-1 font-serif">EUR 400</strong>
+                            <p className="text-[8px] text-gray-400 mt-1 leading-tight">Global online portal access and electronic volume.</p>
+                          </div>
+                        </div>
+
+                        <div className="p-2 bg-white/5 rounded text-[9px] text-gray-450 leading-relaxed font-sans">
+                          * Early bird registrations receive direct access to LaTeX style toolchains and template diagnostics webinar programs handled by the chief publication editors.
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Important dates drawer */}
-                  <div className="grid grid-cols-2 gap-4 text-xs font-mono">
-                    <div className="flex items-center space-x-1.5">
-                      <Calendar className="w-4 h-4 text-[#C9A961] shrink-0" />
-                      <div>
-                        <p className="text-[9px] text-gray-500 font-bold leading-none">Assembly Dates</p>
-                        <p className="font-medium text-gray-300 mt-0.5">{upcomingConfs[activeHeroConf].dates.display.split("to")[0]}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-1.5">
-                      <MapPin className="w-4 h-4 text-[#C9A961] shrink-0" />
-                      <div>
-                        <p className="text-[9px] text-gray-500 font-bold leading-none">Geographical Spot</p>
-                        <p className="font-medium text-gray-300 mt-0.5 truncate max-w-[150px]">{upcomingConfs[activeHeroConf].location.split(",")[0]}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 flex justify-between items-center bg-white/5 -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-4 mt-6">
+                  {/* Actions Row */}
+                  <div className="pt-2 flex justify-between items-center bg-white/5 -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-3.5 mt-2">
                     <button
                       onClick={() => onNavigate('conferences', null, upcomingConfs[activeHeroConf].id)}
-                      className="text-[#C9A961] hover:text-white text-xs font-semibold uppercase tracking-wider flex items-center space-x-2 cursor-pointer"
+                      className="text-[#C9A961] hover:text-white text-xs font-semibold uppercase tracking-wider flex items-center space-x-2 cursor-pointer group"
                     >
-                      <span>Read Full Scope & Dates</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <span className="group-hover:underline">Read Editorial Scope & Submit</span>
+                      <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                     </button>
-                    <span className="text-[10px] text-gray-400 font-mono italic">Springer Publications Series</span>
+                    <span className="text-[9px] text-gray-400 font-mono italic">Springer Engineering Series</span>
                   </div>
                 </motion.div>
               </AnimatePresence>
@@ -296,37 +488,88 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" id="workflow">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
-          {/* Animated video frame */}
-          <div className="relative rounded-2xl overflow-hidden border shadow-lg group bg-black">
-            {videoPlayState ? (
-              <div className="h-80 bg-[#1A1A2E] text-white p-6 flex flex-col items-center justify-center space-y-4">
-                <div className="w-12 h-12 rounded-full border-4 border-t-transparent border-[#C9A961] animate-spin"></div>
-                <p className="text-xs font-semibold text-[#C9A961] uppercase tracking-wider animate-pulse">Playing explanatory layout stream...</p>
-                <button
-                  onClick={() => setVideoPlayState(false)}
-                  className="bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-1.5 rounded text-xs"
-                >
-                  Close Media stream
-                </button>
-              </div>
-            ) : (
-              <>
-                <img
-                  src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=800"
-                  alt="Workflow Overview"
-                  className="w-full h-80 object-cover filter brightness-90 transform group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-transparent flex items-center justify-center">
+          {/* Dual video Segmented Switcher & Frame */}
+          <div className="space-y-4">
+            <div className="flex bg-[#0A1F44]/5 p-1 rounded-xl border border-divider/60 text-[11px] font-semibold font-mono">
+              <button 
+                type="button" 
+                onClick={() => {
+                  setActiveWorkflowVideo('video1');
+                  setVideoPlayState(false);
+                }}
+                className={`flex-1 py-2 rounded-lg text-center transition-all duration-300 cursor-pointer ${
+                  activeWorkflowVideo === 'video1' 
+                    ? 'bg-[#0A1F44] text-white font-bold shadow-sm' 
+                    : 'text-gray-500 hover:text-[#0A1F44]'
+                }`}
+              >
+                📹 Video 1: Editorial Workflow Walkthrough
+              </button>
+              <button 
+                type="button" 
+                onClick={() => {
+                  setActiveWorkflowVideo('video2');
+                  setVideoPlayState(false);
+                }}
+                className={`flex-1 py-2 rounded-lg text-center transition-all duration-300 cursor-pointer ${
+                  activeWorkflowVideo === 'video2' 
+                    ? 'bg-[#0A1F44] text-white font-bold shadow-sm' 
+                    : 'text-gray-500 hover:text-[#0A1F44]'
+                }`}
+              >
+                🎓 Video 2: Mentorship Process Simulator
+              </button>
+            </div>
+
+            {/* Video container */}
+            <div className="relative rounded-2xl overflow-hidden border shadow-lg group bg-black h-80">
+              {videoPlayState ? (
+                <div className="relative w-full h-full bg-black flex flex-col justify-between animate-fade-in">
+                  <video
+                    autoPlay
+                    controls
+                    className="w-full h-full object-contain"
+                    src={activeWorkflowVideo === 'video1' ? "/video 1.mp4" : "/video 2.mp4"}
+                    playsInline
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      console.log("Local mp4 failed, playing premium developer overlay");
+                      e.currentTarget.src = activeWorkflowVideo === 'video1'
+                        ? "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-programmer-typing-on-a-keyboard-40546-large.mp4"
+                        : "https://assets.mixkit.co/videos/preview/mixkit-man-working-hard-in-the-office-42323-large.mp4";
+                    }}
+                  />
                   <button
-                    onClick={() => setVideoPlayState(true)}
-                    className="w-16 h-16 rounded-full bg-accent-gold text-primary-navy shadow-xl flex items-center justify-center hover:scale-110 transition cursor-pointer"
-                    title="Play workflow layout video"
+                    onClick={() => setVideoPlayState(false)}
+                    className="absolute top-3 right-3 bg-black/60 hover:bg-black/85 text-white p-1.5 rounded-full backdrop-blur-xs transition z-20 cursor-pointer shadow-md"
+                    title="Close Video"
                   >
-                    <Play className="w-8 h-8 fill-current ml-1" />
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
-              </>
-            )}
+              ) : (
+                <div className="relative w-full h-full">
+                  <img
+                    src={
+                      activeWorkflowVideo === 'video1'
+                        ? "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800"
+                        : "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=800"
+                    }
+                    alt={activeWorkflowVideo === 'video1' ? "Editorial Workflow" : "Process Simulator"}
+                    className="w-full h-80 object-cover filter brightness-90 transform group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-transparent flex items-center justify-center">
+                    <button
+                      onClick={() => setVideoPlayState(true)}
+                      className="w-16 h-16 rounded-full bg-accent-gold hover:bg-[#bda056] text-primary-navy shadow-xl flex items-center justify-center hover:scale-110 transition cursor-pointer"
+                      title="Play presentation video"
+                    >
+                      <Play className="w-8 h-8 fill-current ml-1" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Workflow Narrative */}
