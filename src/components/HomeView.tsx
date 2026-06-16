@@ -12,11 +12,11 @@ interface HomeViewProps {
 export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) {
   // Cinematic background images supporting premium uploaded files with premium Unsplash fallback resources
   const heroBgImagesConfig = [
-    { primary: "/banner 1.png", secondary: "/banner_1.png", fallback: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200" },
-    { primary: "/banner 2.png", secondary: "/banner_2.png", fallback: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200" },
-    { primary: "/banner 3.png", secondary: "/banner_3.png", fallback: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200" },
-    { primary: "/banner 4.png", secondary: "/banner_4.png", fallback: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200" },
-    { primary: "/banner 5.png", secondary: "/banner_5.png", fallback: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200" }
+    { primary: "/banner_1.png", secondary: "/banner%201.png", fallback: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner_2.png", secondary: "/banner%202.png", fallback: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner_3.png", secondary: "/banner%203.png", fallback: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner_4.png", secondary: "/banner%204.png", fallback: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200" },
+    { primary: "/banner_5.png", secondary: "/banner%205.png", fallback: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200" }
   ];
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -529,7 +529,7 @@ export default function HomeView({ onNavigate, onSelectMentor }: HomeViewProps) 
                     autoPlay
                     controls
                     className="w-full h-full object-contain"
-                    src={activeWorkflowVideo === 'video1' ? "/video 1.mp4" : "/video 2.mp4"}
+                    src={activeWorkflowVideo === 'video1' ? "/video%201.mp4" : "/video%202.mp4"}
                     playsInline
                     referrerPolicy="no-referrer"
                     onError={(e) => {

@@ -838,7 +838,7 @@ export default function ServicesHub({ initialSub }: ServicesHubProps) {
                         <video
                           ref={videoRef}
                           className="w-full h-full object-cover"
-                          src="/video 2.mp4"
+                          src="/video%202.mp4"
                           playsInline
                           onTimeUpdate={handleTimeUpdate}
                           onEnded={handleVideoEnded}
